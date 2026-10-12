@@ -88,8 +88,8 @@ public class OtlpAwsLogRecordExporterTests : AbstractOtlpAwsExporterTest<OtlpAws
         {
             Assert.Equal("test-log-group", request.Headers["x-aws-log-group"]);
             Assert.Equal("test-log-stream", request.Headers["x-aws-log-stream"]);
-            Assert.Contains("x-aws-log-group", request.Headers["Authorization"]);
-            Assert.Contains("x-aws-log-stream", request.Headers["Authorization"]);
+            Assert.DoesNotContain("x-aws-log-group", request.Headers["Authorization"]);
+            Assert.DoesNotContain("x-aws-log-stream", request.Headers["Authorization"]);
         });
     }
 
