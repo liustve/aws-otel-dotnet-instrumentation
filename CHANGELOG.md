@@ -12,6 +12,9 @@ If your change does not need a CHANGELOG entry, add the "skip changelog" label t
 
 ## Unreleased
 
+- Add SigV4 signing to the upstream OTLP metric exporter
+  ([#2](https://github.com/liustve/aws-otel-dotnet-instrumentation/pull/2)).
+
 - Reuse the upstream OTLP log exporter for SigV4
   ([#477](https://github.com/aws-observability/aws-otel-dotnet-instrumentation/pull/477)).
 
