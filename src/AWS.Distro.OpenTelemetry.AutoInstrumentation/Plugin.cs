@@ -20,6 +20,7 @@ using OpenTelemetry.Instrumentation.AspNet;
 #endif
 using System.Runtime.CompilerServices;
 using System.Text.RegularExpressions;
+using AWS.Distro.OpenTelemetry.AutoInstrumentation.Exporter.Console.Logs;
 using AWS.Distro.OpenTelemetry.AutoInstrumentation.Exporter.Otlp.Aws.Logs;
 using AWS.Distro.OpenTelemetry.AutoInstrumentation.Exporter.Otlp.Aws.Traces;
 using AWS.Distro.OpenTelemetry.AutoInstrumentation.Logging;
@@ -53,9 +54,8 @@ public class Plugin
     private static readonly string CloudWatchLogsOtlpEndpointPattern = "^https://logs\\.([a-z0-9-]+)\\.amazonaws\\.com/v1/logs$";
     private static readonly string SigV4EnabledConfig = "OTEL_AWS_SIG_V4_ENABLED";
 #pragma warning disable CS0436 // Type conflicts with imported type
-    private static readonly ILoggerFactory Factory = LoggerFactory.Create(builder => builder.AddProvider(new ConsoleLoggerProvider()));
+    private static readonly ILogger Logger = new ConsoleLoggerProvider().CreateLogger(typeof(Plugin).FullName!);
 #pragma warning restore CS0436 // Type conflicts with imported type
-    private static readonly ILogger Logger = Factory.CreateLogger<Plugin>();
     private static readonly string ApplicationSignalsExporterEndpointConfig = "OTEL_AWS_APPLICATION_SIGNALS_EXPORTER_ENDPOINT";
     private static readonly string ApplicationSignalsRuntimeEnabledConfig = "OTEL_AWS_APPLICATION_SIGNALS_RUNTIME_ENABLED";
     private static readonly string MetricExporterConfig = "OTEL_METRICS_EXPORTER";
@@ -391,21 +391,6 @@ public class Plugin
     }
 
     /// <summary>
-    /// Registers CompactConsoleLogRecordExporter for console output in Lambda.
-    /// </summary>
-    /// <param name="options">The OpenTelemetry logger options</param>
-    public void ConfigureLogsOptions(global::OpenTelemetry.Logs.OpenTelemetryLoggerOptions options)
-    {
-        if (!AwsSpanProcessingUtil.IsLambdaEnvironment())
-        {
-            return;
-        }
-
-        options.AddProcessor(new global::OpenTelemetry.SimpleLogRecordExportProcessor(
-            new AutoInstrumentation.Exporter.Console.Logs.CompactConsoleLogRecordExporter()));
-    }
-
-    /// <summary>
     /// Adds SigV4 signing to the upstream OTLP log exporter after its options have been configured.
     /// </summary>
     /// <param name="options">The configured upstream OTLP log exporter options.</param>
@@ -434,6 +419,11 @@ public class Plugin
     public ResourceBuilder ConfigureResource(ResourceBuilder builder)
     {
         this.ResourceBuilderCustomizer(builder);
+        if (AwsSpanProcessingUtil.IsLambdaEnvironment())
+        {
+            LambdaConsoleExporterReplacement.Register(builder, message => Logger.LogWarning(message));
+        }
+
         return builder;
     }
 

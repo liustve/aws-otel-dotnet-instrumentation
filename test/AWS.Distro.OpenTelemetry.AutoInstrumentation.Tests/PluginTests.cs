@@ -522,7 +522,6 @@ public class OtlpAwsLogRecordExporterConfigurationTests : PluginTests
         Environment.SetEnvironmentVariable("OTEL_EXPORTER_OTLP_LOGS_TIMEOUT", "5432");
         using var loggerFactory = LoggerFactory.Create(builder => builder.AddOpenTelemetry(options =>
         {
-            plugin.ConfigureLogsOptions(options);
             options.AddOtlpExporter((exporterOptions, processorOptions) =>
             {
                 exporterOptions.Endpoint = Endpoint;

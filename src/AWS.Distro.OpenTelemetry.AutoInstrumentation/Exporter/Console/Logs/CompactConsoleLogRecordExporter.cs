@@ -23,9 +23,8 @@ public class CompactConsoleLogRecordExporter : BaseExporter<LogRecord>
 {
     private static readonly JsonWriterOptions CompactWriterOptions = new JsonWriterOptions { Indented = false };
 #pragma warning disable CS0436 // Type conflicts with imported type
-    private static readonly ILoggerFactory LogFactory = LoggerFactory.Create(builder => builder.AddProvider(new Logging.ConsoleLoggerProvider()));
+    private static readonly ILogger Logger = new Logging.ConsoleLoggerProvider().CreateLogger(typeof(CompactConsoleLogRecordExporter).FullName!);
 #pragma warning restore CS0436 // Type conflicts with imported type
-    private static readonly ILogger Logger = LogFactory.CreateLogger<CompactConsoleLogRecordExporter>();
 
     private readonly TextWriter output;
     private Resource? resource;

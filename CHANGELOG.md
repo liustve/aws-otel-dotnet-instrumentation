@@ -12,6 +12,9 @@ If your change does not need a CHANGELOG entry, add the "skip changelog" label t
 
 ## Unreleased
 
+- Replace the selected console log exporter with compact JSON in Lambda while
+  retaining OpenTelemetry's processor and honoring disabled and mixed exporters.
+
 - Reuse the upstream OTLP log exporter for SigV4
   ([#477](https://github.com/aws-observability/aws-otel-dotnet-instrumentation/pull/477)).
 
